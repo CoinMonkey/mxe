@@ -6,13 +6,13 @@
 
 PKG             := pthreads
 $(PKG)_VERSION  := POSIX 1003.1-2001
-$(PKG)_DEPS     := gcc
+$(PKG)_DEPS     := winpthreads
 
 define $(PKG)_UPDATE
     echo $(pthreads_VERSION)
 endef
 
-define $(PKG)_BUILD
+define PTHREADS_TEST
     # install and test pkg-config
     $(INSTALL) -d '$(PREFIX)/$(TARGET)/lib/pkgconfig'
     (echo 'Name: pthreads'; \
@@ -21,16 +21,10 @@ define $(PKG)_BUILD
      echo 'Libs: -lpthread'; \
     ) > '$(PREFIX)/$(TARGET)/lib/pkgconfig/pthreads.pc'
 
-    # test pkg-config and libgomp
     '$(TARGET)-gcc' \
         -W -Wall -Werror -ansi -pedantic \
-        '$(TOP_DIR)/src/$(PKG)-test.c' -o '$(PREFIX)/$(TARGET)/bin/test-$(PKG).exe' \
+        '$(TOP_DIR)/src/pthreads-test.c' -o '$(PREFIX)/$(TARGET)/bin/test-$(PKG).exe' \
         `'$(TARGET)-pkg-config' --libs pthreads`
-
-    '$(TARGET)-gcc' \
-        -W -Wall -Werror -ansi -pedantic \
-        '$(TOP_DIR)/src/$(PKG)-libgomp-test.c' -o '$(PREFIX)/$(TARGET)/bin/test-$(PKG)-libgomp.exe' \
-        -fopenmp
 
     # test cmake
     mkdir '$(1).test-cmake'
